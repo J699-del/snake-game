@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1 style="color: black;">PROVIDE GMAIL AND PLAN ID FOR BUYING PLAN</h1>
+    <form id="purchaseForm" action="/purchase" method="POST">
+        <!-- Add any other necessary input fields -->
+        <input type="text" name="email" placeholder="Email" style="color: red;">
+        <input type="text" name="planId" placeholder="Plan ID" style="color: red;">
+        <div id="card-element"></div>
+        <button type="button" id="purchaseButton">BUY PLAN</button>
+      </form>
+      
+      <script src="https://js.stripe.com/v3/"></script>
+      <script>
+        var stripe = Stripe('YOUR_STRIPE_PUBLIC_KEY'); // Replace with your actual Stripe public key
+        var elements = stripe.elements();
+        var cardElement = elements.create('card');
+        cardElement.mount('#card-element');
+      
+        document.getElementById('purchaseButton').addEventListener('click', async function () {
+          var { token, error } = await stripe.createToken(cardElement);
+      
+          if (error) {
+            console.error(error);
+            alert('Error processing payment. Please try again.');
+          } else {
+            var form = document.getElementById('purchaseForm');
+            var hiddenInput = document.createElement('input');
+            hiddenInput.setAttribute('type', 'hidden');
+            hiddenInput.setAttribute('name', 'token');
+            hiddenInput.setAttribute('value', token.id);
+            form.appendChild(hiddenInput);
+            form.submit();
+          }
+        });
+      </script>
+      
+</body>
+</html>
